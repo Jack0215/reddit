@@ -1,0 +1,14 @@
+version: "3"
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432" #host의 기본 port가 5432임
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+    volumes:
+      - ./data:/var/lib/postgresql/data #data라는 경로 안에 넣어줌, postgres를 docker를 이용해 사용함.
+      #docker container를 없애면 데이터가 없어지는데, volumes를 설정하면 container가 없어도 데이터가 남아있음
