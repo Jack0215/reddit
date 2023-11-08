@@ -1,40 +1,40 @@
 import React, { FormEvent, useState } from "react";
 import InputGroup from "../components/InputGroup";
 import axios from "axios";
-import { useRouter } from "next/router";
 
-export const Register = () => {
-  const [email, setEmail] = useState("");
+import { useRouter } from "next/router";
+import { useAuthDispatch } from "../context/auth";
+
+const Login = () => {
+  let router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<any>({});
-  let router = useRouter();
+
+  const dispatch = useAuthDispatch();
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+
     try {
-      const res = await axios.post("/auth/register", {
-        email,
-        password,
-        username,
-      });
-      router.push("/login");
+      const res = await axios.post(
+        "/auth/login",
+        { username, password },
+        { withCredentials: true }
+      );
+
+      dispatch("LOGIN", res.data?.user);
+      router.push("/");
     } catch (error: any) {
-      console.log("handleSubmit error", error);
-      setErrors(error.response.data || {});
+      console.log(error.response.data || {});
     }
   };
   return (
     <div className="bg-white">
       <div className="flex fflex-col items-center justify-center h-screen p-6">
         <div className="w-10/12 mx-auto md:w-96">
-          <h1 className="mb-2 text-lg font-medium">회원가입</h1>
+          <h1 className="mb-2 text-lg font-medium">로그인</h1>
           <form onSubmit={handleSubmit}>
-            <InputGroup
-              placeholder="e-mail"
-              value={email}
-              setValue={setEmail}
-              error={errors.email}
-            />
             <InputGroup
               placeholder="username"
               value={username}
@@ -48,13 +48,13 @@ export const Register = () => {
               error={errors.password}
             />
             <button className="w-full py-2 mb-1 text-xs font-bold text-white uppercase bg-gray-400 border border-gray-400 rounded">
-              회원 가입
+              로그인
             </button>
           </form>
           <small>
-            이미 가입하셨나요? {/* <Link href="/login"> */}
-            <a href="/login" className="ml-1 text-blue-500 uppercase">
-              로그인
+            아직 아이디가 없나요?
+            <a href="/register" className="ml-1 text-blue-500 uppercase">
+              회원가입
             </a>
             {/* </Link> */}
           </small>
@@ -63,5 +63,4 @@ export const Register = () => {
     </div>
   );
 };
-
-export default Register;
+export default Login;

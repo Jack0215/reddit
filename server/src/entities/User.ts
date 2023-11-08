@@ -19,7 +19,7 @@ export class User extends BaseEntity {
   username: string;
 
   @Column()
-  @Length(6, 255, { message: "비밀번혼느 6자리 이상이어야 합니다." })
+  @Length(6, 255, { message: "비밀번호는 6자리 이상이어야 합니다." })
   password: string;
 
   @OneToMany(() => Post, (post) => post.user)
