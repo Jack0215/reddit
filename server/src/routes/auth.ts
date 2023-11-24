@@ -5,13 +5,18 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookie from "cookie";
 
+import userMiddleware from "../middlewares/user";
+import authMiddleware from "../middlewares/auth";
+
 const mapError = (errors: Object[]) => {
   return errors.reduce((prev: any, err: any) => {
     prev[err.property] = Object.entries(err.constraints)[0][1];
     return prev;
   }, {});
 };
-
+const me = async (_: Request, res: Response) => {
+  return res.json(res.locals.user);
+};
 //req: register에서 보낸 정보가 담겨있음
 //res: req를 이용해 response를 보냄
 const register = async (req: Request, res: Response) => {
@@ -81,7 +86,7 @@ const login = async (req: Request, res: Response) => {
       return res.status(401).json({ password: "비밀번호가 잘못되었습니다." });
     }
 
-    const token = jwt.sign({ username }, process.env.JWT_SCERET);
+    const token = jwt.sign({ username }, process.env.JWT_SECRET);
 
     res.set(
       "Set-Cookie",
@@ -99,6 +104,7 @@ const login = async (req: Request, res: Response) => {
   }
 };
 const router = Router();
+router.get("/me", userMiddleware, authMiddleware, me);
 router.post("/register", register); // /register라는 경로에서 오면, register handler 발동
 router.post("/login", login);
 
